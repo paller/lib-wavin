@@ -1,10 +1,27 @@
 #include <inttypes.h>
 
 
+enum wc_io_status {
+  WC_STATUS_NA,
+  WC_STATUS_RX_SUCCESS,
+  WC_STATUS_RX_FAIL,
+  WC_STATUS_TX_SUCCESS,
+  WC_STATUS_TX_FAIL,
+};
+
+
+struct wc_io_descriptor {
+  wc_io_status status;
+  bool (*init)(void);
+  wc_io_status (*read)(uint8_t *, uint16_t length);
+  wc_io_status (*write)(uint8_t *, uint16_t length);
+};
+
+
 class WavinController
 {
   public:
-    WavinController(uint8_t pin, bool swapSerialPins, uint16_t timeout_ms);
+    WavinController(const struct wc_io_descriptor *io);
     bool readRegisters(uint8_t category, uint8_t page, uint8_t index, uint8_t count, uint16_t *reply);
     bool writeRegister(uint8_t category, uint8_t page, uint8_t index, uint16_t value);
     bool writeMaskedRegister(uint8_t category, uint8_t page, uint8_t index, uint16_t value, uint16_t mask);
@@ -37,8 +54,7 @@ class WavinController
     static const uint16_t CHANNELS_PRIMARY_ELEMENT_ALL_TP_LOST_MASK = 0x0400;
     
   private:
-    uint8_t txEnablePin;
-    uint16_t recieveTimeout_ms;
+    struct wc_io_descriptor io;
     void transmit(uint8_t *data, uint8_t lenght);
     bool recieve(uint16_t *reply, uint8_t cmdtype);
     unsigned int calculateCRC(unsigned char *frame, unsigned char bufferSize);
