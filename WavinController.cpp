@@ -2,20 +2,10 @@
 #include "WavinController.h"
 
 
-WavinController::WavinController(uint8_t pin, bool swapSerialPins, uint16_t timeout_ms)
+WavinController::WavinController(io_descriptor_wavin io_descriptor)
 {
-  txEnablePin = pin;
-  digitalWrite(pin, LOW);
-  pinMode(pin, OUTPUT);
-
-  recieveTimeout_ms = timeout_ms;
-
-  Serial.begin(38400);
-
-  if(swapSerialPins)
-  {
-    Serial.swap();
-  }
+  io_descriptor_wavin io = io_descriptor;
+  io.init();
 }
 
 
@@ -46,50 +36,40 @@ bool WavinController::recieve(uint16_t *reply, uint8_t cmdtype)
 {
   uint8_t buffer[RECIEVE_BUFFER_SIZE];
   uint8_t n = 0;
-  unsigned long start_time = millis();
 
-  while (millis() - start_time < recieveTimeout_ms)
+  while (n < RECIEVE_BUFFER_SIZE)
   {
-    while (Serial.available() && n<RECIEVE_BUFFER_SIZE)
+    n += io.read(&buffer[n], RECIEVE_BUFFER_SIZE - n);
+
+    if (n > 5 &&
+      buffer[0] == MODBUS_DEVICE &&
+      buffer[1] == cmdtype &&
+      buffer[2] + 5 == n)
     {
-      buffer[n] = Serial.read();
-      n++;
+      // Complete package
+      uint16_t crc = calculateCRC(buffer, n);
+      if (crc != 0) return false;
 
-      if (n > 5 &&
-        buffer[0] == MODBUS_DEVICE &&
-        buffer[1] == cmdtype &&
-        buffer[2] + 5 == n)
+      // CRC ok, copy to reply buffer
+      for (int j = 0; j < buffer[2] / 2; j++)
       {
-        // Complete package
-        uint16_t crc = calculateCRC(buffer, n);
-        if (crc != 0) return false;
-
-        // CRC ok, copy to reply buffer
-        for (int j = 0; j < buffer[2] / 2; j++)
-        {
-          reply[j] = (buffer[3 + j * 2] << 8) + buffer[4 + j * 2];
-        }
-        return true;
+        reply[j] = (buffer[3 + j * 2] << 8) + buffer[4 + j * 2];
       }
+      return true;
     }
   }
   return false;
 }
 
 
-void WavinController::transmit(uint8_t *data, uint8_t lenght)
+bool WavinController::transmit(uint8_t *data, uint8_t lenght)
 {
-  // Empty recieve buffer before sending
-  while (Serial.read() != -1);
+  if (io.write(data, lenght) == lenght)
+  {
+    return true;
+  }
 
-  digitalWrite(txEnablePin, HIGH);
-
-  Serial.write(data, lenght);
-
-  Serial.flush(); // Wait for data to be sent
-  delayMicroseconds(250); // Wait for last char to be transmitted
-
-  digitalWrite(txEnablePin, LOW);
+  return false;
 }
 
 

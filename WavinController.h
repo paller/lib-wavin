@@ -1,10 +1,16 @@
 #include <inttypes.h>
 
+typedef struct {
+  void (*init)(void);
+  size_t (*write)(uint8_t *data, uint8_t length);
+  size_t (*read)(uint8_t *buffer, uint8_t length);
+} io_descriptor_wavin;
+
 
 class WavinController
 {
   public:
-    WavinController(uint8_t pin, bool swapSerialPins, uint16_t timeout_ms);
+    WavinController(io_descriptor_wavin io_desciptor);
     bool readRegisters(uint8_t category, uint8_t page, uint8_t index, uint8_t count, uint16_t *reply);
     bool writeRegister(uint8_t category, uint8_t page, uint8_t index, uint16_t value);
     bool writeMaskedRegister(uint8_t category, uint8_t page, uint8_t index, uint16_t value, uint16_t mask);
@@ -37,10 +43,10 @@ class WavinController
     static const uint16_t CHANNELS_PRIMARY_ELEMENT_ALL_TP_LOST_MASK = 0x0400;
     
   private:
-    uint8_t txEnablePin;
-    uint16_t recieveTimeout_ms;
-    void transmit(uint8_t *data, uint8_t lenght);
+    io_descriptor_wavin io;
     bool recieve(uint16_t *reply, uint8_t cmdtype);
+    bool transmit(uint8_t *data, uint8_t lenght);
+
     unsigned int calculateCRC(unsigned char *frame, unsigned char bufferSize);
 
     const uint8_t MODBUS_DEVICE = 0x01;
