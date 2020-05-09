@@ -1,5 +1,4 @@
 #include "WavinController.h"
-#include <ESP8266WiFi.h>
 
 WavinController::WavinController(io_descriptor_wavin io_descriptor)
 {
