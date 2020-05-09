@@ -12,39 +12,38 @@ typedef struct {
 
 class WavinController {
 public:
-
     enum Category : uint8_t {
-        CATEGORY_MAIN = 0x00,
-        CATEGORY_ELEMENTS = 0x01,
+        CATEGORY_MAIN        = 0x00,
+        CATEGORY_ELEMENTS    = 0x01,
         CATEGORY_PACKED_DATA = 0x02,
-        CATEGORY_CHANNELS = 0x03,
-        CATEGORY_RELAYS = 0x04,
-        CATEGORY_CLOCK = 0x05,
-        CATEGORY_SCHEDULES = 0x06,
-        CATEGORY_INFO = 0x07,
+        CATEGORY_CHANNELS    = 0x03,
+        CATEGORY_RELAYS      = 0x04,
+        CATEGORY_CLOCK       = 0x05,
+        CATEGORY_SCHEDULES   = 0x06,
+        CATEGORY_INFO        = 0x07,
     };
 
     enum Element : uint8_t {
         ELEMENTS_AIR_TEMPERATURE = 0x04,
-        ELEMENTS_BATTERY_STATUS = 0x0A,
-        ELEMENTS_SYNC_GROUP = 0x0B,
+        ELEMENTS_BATTERY_STATUS  = 0x0A,
+        ELEMENTS_SYNC_GROUP      = 0x0B,
     };
 
     enum Data : uint8_t {
-        PACKED_DATA_MANUAL_TEMPERATURE = 0x00,
-        PACKED_DATA_STANDBY_TEMPERATURE = 0x04,
-        PACKED_DATA_CONFIGURATION = 0x07,
-        PACKED_DATA_CONFIGURATION_MODE_MASK = 0x07,
-        PACKED_DATA_CONFIGURATION_MODE_MANUAL = 0x00,
+        PACKED_DATA_MANUAL_TEMPERATURE         = 0x00,
+        PACKED_DATA_STANDBY_TEMPERATURE        = 0x04,
+        PACKED_DATA_CONFIGURATION              = 0x07,
+        PACKED_DATA_CONFIGURATION_MODE_MASK    = 0x07,
+        PACKED_DATA_CONFIGURATION_MODE_MANUAL  = 0x00,
         PACKED_DATA_CONFIGURATION_MODE_STANDBY = 0x01,
     };
 
     enum Channel : uint16_t {
-        NUMBER_OF_CHANNELS = 16,
-        CHANNELS_TIMER_EVENT = 0x0000,
-        CHANNELS_TIMER_EVENT_OUTP_ON_MASK = 0x0010,
-        CHANNELS_PRIMARY_ELEMENT = 0x0002,
-        CHANNELS_PRIMARY_ELEMENT_ELEMENT_MASK = 0x003f,
+        NUMBER_OF_CHANNELS                        = 16,
+        CHANNELS_TIMER_EVENT                      = 0x0000,
+        CHANNELS_TIMER_EVENT_OUTP_ON_MASK         = 0x0010,
+        CHANNELS_PRIMARY_ELEMENT                  = 0x0002,
+        CHANNELS_PRIMARY_ELEMENT_ELEMENT_MASK     = 0x003f,
         CHANNELS_PRIMARY_ELEMENT_ALL_TP_LOST_MASK = 0x0400,
     };
 
@@ -60,9 +59,9 @@ private:
 
     unsigned int calculateCRC(unsigned char* frame, unsigned char bufferSize);
 
-    const uint8_t MODBUS_DEVICE = 0x01;
-    const uint8_t MODBUS_READ_REGISTER = 0x43;
-    const uint8_t MODBUS_WRITE_REGISTER = 0x44;
+    const uint8_t MODBUS_DEVICE                = 0x01;
+    const uint8_t MODBUS_READ_REGISTER         = 0x43;
+    const uint8_t MODBUS_WRITE_REGISTER        = 0x44;
     const uint8_t MODBUS_WRITE_MASKED_REGISTER = 0x45;
 
     // Largest page contains 22 registers of 2 bytes + 5 bytes header
