@@ -50,16 +50,16 @@ bool WavinController::recieve(uint16_t* reply, uint8_t cmdtype)
     return false;
 }
 
-bool WavinController::transmit(uint8_t* data, uint8_t lenght)
+bool WavinController::transmit(uint8_t* data, uint8_t length)
 {
-    if (io.write(data, lenght) == lenght) {
+    if (io.write(data, length) == length) {
         return true;
     }
 
     return false;
 }
 
-bool WavinController::readRegisters(uint8_t category, uint8_t page, uint8_t index, uint8_t count, uint16_t* reply)
+bool WavinController::readRegisters(Category category, uint8_t page, uint8_t index, uint8_t count, uint16_t* reply)
 {
     uint8_t message[8];
 
@@ -80,7 +80,7 @@ bool WavinController::readRegisters(uint8_t category, uint8_t page, uint8_t inde
     return recieve(reply, MODBUS_READ_REGISTER);
 }
 
-bool WavinController::writeRegister(uint8_t category, uint8_t page, uint8_t index, uint16_t value)
+bool WavinController::writeRegister(Category category, uint8_t page, uint8_t index, uint16_t value)
 {
     uint8_t message[10];
 
@@ -104,7 +104,7 @@ bool WavinController::writeRegister(uint8_t category, uint8_t page, uint8_t inde
     return recieve(reply, MODBUS_WRITE_REGISTER); // Recieve reply but ignore it. Asume it's ok
 }
 
-bool WavinController::writeMaskedRegister(uint8_t category, uint8_t page, uint8_t index, uint16_t value, uint16_t mask)
+bool WavinController::writeMaskedRegister(Category category, uint8_t page, uint8_t index, uint16_t value, uint16_t mask)
 {
     uint8_t message[12];
 
